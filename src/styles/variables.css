@@ -1,0 +1,84 @@
+:root {
+  /* COLORS */
+  /* "@radix-ui/colors/indigo.css" */
+  --primary1: hsl(225, 60%, 99.4%);
+  --primary2: hsl(223, 100%, 98.6%);
+  --primary3: hsl(223, 98.4%, 97.1%);
+  --primary4: hsl(223, 92.9%, 95%);
+  --primary5: hsl(224, 87.1%, 92%);
+  --primary6: hsl(224, 81.9%, 87.8%);
+  --primary7: hsl(225, 77.4%, 82.1%);
+  --primary8: hsl(226, 75.4%, 74.5%);
+  --primary9: hsl(226, 70%, 55.5%);
+  --primary10: hsl(226, 58.6%, 51.3%);
+  --primary11: hsl(226, 55%, 45%);
+  --primary12: hsl(226, 62%, 17%);
+
+  /* "@radix-ui/colors/slate.css" */
+  --gray1: hsl(206, 30%, 98.8%);
+  --gray2: hsl(210, 16.7%, 97.6%);
+  --gray3: hsl(209, 13.3%, 95.3%);
+  --gray4: hsl(209, 12.2%, 93.2%);
+  --gray5: hsl(208, 11.7%, 91.1%);
+  --gray6: hsl(208, 11.3%, 88.9%);
+  --gray7: hsl(207, 11.1%, 85.9%);
+  --gray8: hsl(205, 10.7%, 78%);
+  --gray9: hsl(206, 6%, 56.1%);
+  --gray10: hsl(206, 5.8%, 52.3%);
+  --gray11: hsl(206, 6%, 43.5%);
+  --gray12: hsl(206, 24%, 9%);
+
+  /* "@radix-ui/colors/green.css" */
+  --green1: hsl(136, 50%, 98.9%);
+  --green2: hsl(138, 62.5%, 96.9%);
+  --green3: hsl(139, 55.2%, 94.5%);
+  --green4: hsl(140, 48.7%, 91%);
+  --green5: hsl(141, 43.7%, 86%);
+  --green6: hsl(143, 40.3%, 79%);
+  --green7: hsl(146, 38.5%, 69%);
+  --green8: hsl(151, 40.2%, 54.1%);
+  --green9: hsl(151, 55%, 41.5%);
+  --green10: hsl(152, 57.5%, 37.6%);
+  --green11: hsl(153, 67%, 28.5%);
+  --green12: hsl(155, 40%, 14%);
+
+  /* "@radix-ui/colors/yellow.css" */
+  --yellow1: hsl(60, 54%, 98.5%);
+  --yellow2: hsl(52, 100%, 95.5%);
+  --yellow3: hsl(55, 100%, 90.9%);
+  --yellow4: hsl(54, 100%, 86.6%);
+  --yellow5: hsl(52, 97.9%, 82%);
+  --yellow6: hsl(50, 89.4%, 76.1%);
+  --yellow7: hsl(47, 80.4%, 68%);
+  --yellow8: hsl(48, 100%, 46.1%);
+  --yellow9: hsl(53, 92%, 50%);
+  --yellow10: hsl(50, 100%, 48.5%);
+  --yellow11: hsl(42, 100%, 29%);
+  --yellow12: hsl(40, 55%, 13.5%);
+
+  /* "@radix-ui/colors/red.css" */
+  --red1: hsl(359, 100%, 99.4%);
+  --red2: hsl(359, 100%, 98.6%);
+  --red3: hsl(360, 100%, 96.8%);
+  --red4: hsl(360, 97.9%, 94.8%);
+  --red5: hsl(360, 90.2%, 91.9%);
+  --red6: hsl(360, 81.7%, 87.8%);
+  --red7: hsl(359, 74.2%, 81.7%);
+  --red8: hsl(359, 69.5%, 74.3%);
+  --red9: hsl(358, 75%, 59%);
+  --red10: hsl(358, 69.4%, 55.2%);
+  --red11: hsl(358, 65%, 48.7%);
+  --red12: hsl(354, 50%, 14.6%);
+
+  --bg-color: var(--gray1);
+  --text-color: var(--gray12);
+
+  /* TYPOGRAPHY */
+  --ff-sans: system-ui, sans-serif;
+  --ff-serif: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052,
+    serif;
+  --ff-slab: Rockwell, 'Rockwell Nova', 'Roboto Slab', 'DejaVu Serif',
+    'Sitka Small', serif;
+  --ff-monospace: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo,
+    Consolas, 'DejaVu Sans Mono', monospace;
+}
