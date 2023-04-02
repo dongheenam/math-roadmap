@@ -1,4 +1,7 @@
-const Skills = () => {
-  return <main>skills?</main>;
-};
-export default Skills;
+export default function Skills() {
+  return (
+    <main>
+      <h1>Skills</h1>
+    </main>
+  );
+}

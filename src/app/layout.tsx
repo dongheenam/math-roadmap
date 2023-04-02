@@ -1,4 +1,5 @@
 import '@/styles/global.css';
+import './layout.css';
 
 export const metadata = {
   title: 'Mathematics roadmap',
@@ -12,7 +13,9 @@ export default function RootLayout({
 }) {
   return (
     <html>
-      <body>{children}</body>
+      <body>
+        <div id="root">{children}</div>
+      </body>
     </html>
   );
 }
