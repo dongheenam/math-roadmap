@@ -1,20 +1,20 @@
-import { ObjectId } from 'mongodb';
-
-import client, { getCollection } from './mongodb';
+import client, { getSkillsCollection } from './mongoClient';
 import type { Skill } from '@/app/types/skills';
+import { doDocumentsExist, isCircularDependency } from './utils';
 
-const skills = getCollection(client, 'skills');
-
-const doSkillsExist = async (skillIds: ObjectId[]): Promise<boolean> => {
-  const count = await skills.countDocuments({ _id: { $in: skillIds } });
-  return count === skillIds.length;
-};
+const skillsCollection = getSkillsCollection(client);
 
 const uploadNewSkill = async (skill: Skill): Promise<Skill> => {
-  if (!doSkillsExist(skill.prerequisiteIds)) {
-    throw new Error("Prerequisite skills don't exist");
+  if (skill.prerequisiteIds.length > 0) {
+    const prerequisitesExist = await doDocumentsExist(
+      skillsCollection,
+      skill.prerequisiteIds
+    );
+    if (!prerequisitesExist) {
+      throw new Error("Prerequisite skills don't exist");
+    }
   }
-  const { insertedId } = await skills.insertOne(skill);
+  const { insertedId } = await skillsCollection.insertOne(skill);
   return { ...skill, _id: insertedId };
 };
 export default uploadNewSkill;

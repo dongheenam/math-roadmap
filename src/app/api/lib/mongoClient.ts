@@ -1,4 +1,6 @@
-import { MongoClient } from 'mongodb';
+import { Document, MongoClient } from 'mongodb';
+
+import type { Skill } from '@/app/types/skills';
 
 // ref: https://github.com/vercel/next.js/blob/canary/examples/with-mongodb/lib/mongodb.ts
 // ref: https://www.mongodb.com/docs/atlas/manage-connections-aws-lambda/
@@ -30,6 +32,12 @@ if (process.env.NODE_ENV === 'development') {
 export default client;
 
 // Helper methods
-export const getCollection = (client: MongoClient, collectionName: string) => {
-  return client.db().collection(collectionName);
+export const getCollection = <D extends Document>(
+  client: MongoClient,
+  collectionName: string
+) => {
+  return client.db().collection<D>(collectionName);
+};
+export const getSkillsCollection = (client: MongoClient) => {
+  return getCollection<Skill>(client, 'skills');
 };

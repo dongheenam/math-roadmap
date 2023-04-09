@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import client from '../lib/mongodb';
+import client from '../lib/mongoClient';
 
 export async function GET(request: Request) {
   const data = await client

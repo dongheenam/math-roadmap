@@ -1,9 +1,10 @@
 import { ObjectId } from 'mongodb';
 
 // Interface for Skills
-export type Course = 'AC' | 'DP' | 'MYP' | 'HSC';
-export type YearLevels = {
-  [course in Course]: number;
+export type Course = {
+  AC?: number;
+  IB?: 'AA SL' | 'AA HL' | 'AI HL' | 'AI SL';
+  HSC?: 'Advanced' | 'Standard 2' | 'Extension 1' | 'Extension 2';
 };
 export interface ExampleQuestion {
   _id: string;
@@ -11,10 +12,10 @@ export interface ExampleQuestion {
   answer: string;
 }
 export interface Skill {
-  _id?: ObjectId | undefined;
+  _id: ObjectId;
   code: string;
   description: string;
-  yearLevels: YearLevels;
+  course: Course;
   exampleQuestions: ExampleQuestion[];
   prerequisiteIds: ObjectId[];
 }
