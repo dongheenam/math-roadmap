@@ -27,5 +27,9 @@ if (process.env.NODE_ENV === 'development') {
   // In production mode, it's best to not use a global variable.
   client = new MongoClient(uri, options);
 }
-
 export default client;
+
+// Helper methods
+export const getCollection = (client: MongoClient, collectionName: string) => {
+  return client.db().collection(collectionName);
+};
