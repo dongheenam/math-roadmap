@@ -1,10 +1,10 @@
 import client, { getSkillsCollection } from './mongoClient';
 import type { Skill } from '@/app/types/skills';
-import { doDocumentsExist, isCircularDependency } from './utils';
+import { doDocumentsExist } from './utils';
 
 const skillsCollection = getSkillsCollection(client);
 
-const uploadNewSkill = async (skill: Skill): Promise<Skill> => {
+const createSkill = async (skill: Skill): Promise<Skill> => {
   if (skill.prerequisiteIds.length > 0) {
     const prerequisitesExist = await doDocumentsExist(
       skillsCollection,
@@ -17,4 +17,4 @@ const uploadNewSkill = async (skill: Skill): Promise<Skill> => {
   const { insertedId } = await skillsCollection.insertOne(skill);
   return { ...skill, _id: insertedId };
 };
-export default uploadNewSkill;
+export default createSkill;

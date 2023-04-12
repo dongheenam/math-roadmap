@@ -1,10 +1,9 @@
 import { Skill } from '@/app/types/skills';
 import { MongoClient, Db, ObjectId } from 'mongodb';
-import uploadNewSkill from './uploadNewSkill';
+import createSkill from './createSkill';
 import client from './mongoClient';
 import getSkillById from './getSkillById';
 import editSkill from './editSkill';
-import { randomInt } from 'crypto';
 import deleteSkillById from './deleteSkillById';
 
 // Mock database connection
@@ -22,44 +21,175 @@ afterAll(async () => {
 });
 
 // Mock data sets
-const testSkills: Skill[] = Array.from({ length: 6 }, (_, i) => ({
-  _id: new ObjectId(),
-  code: `MATH-00${i + 1}`,
-  description: `Basic math skill ${i + 1}`,
-  course: {
-    AC: i + 1,
+const skills: Skill[] = [
+  {
+    _id: new ObjectId(),
+    topic: 'Algebra',
+    description: 'Solving simple linear equations',
+    syllabus: { AC: { subject: 7 } },
+    exampleQuestions: [
+      {
+        question: 'Solve for $x$: $2x + 4 = 10$',
+        answer: '$x = 3$',
+      },
+    ],
+    prerequisiteIds: [],
   },
-  exampleQuestions: [],
-  prerequisiteIds: [],
-}));
-testSkills[3].prerequisiteIds = [testSkills[0]._id, testSkills[1]._id];
-testSkills[4].prerequisiteIds = [testSkills[3]._id];
-testSkills[5].prerequisiteIds = [testSkills[2]._id, testSkills[3]._id];
+  {
+    _id: new ObjectId(),
+    topic: 'Geometry',
+    description: 'Calculating the area of a triangle',
+    syllabus: { AC: { subject: 7 } },
+    exampleQuestions: [
+      {
+        question:
+          'Calculate the area of a triangle with a base of $6$ cm and a height of $4$ cm.',
+        answer: 'The area is $12$ square centimeters.',
+      },
+    ],
+    prerequisiteIds: [],
+  },
+  {
+    _id: new ObjectId(),
+    topic: 'Algebra',
+    description: 'Solving quadratic equations',
+    syllabus: { AC: { subject: 10 } },
+    exampleQuestions: [
+      {
+        question: 'Solve for $x$: $x^2 - 4x + 4 = 0$',
+        answer: '$x = 2$',
+      },
+    ],
+    prerequisiteIds: [],
+  },
+  {
+    _id: new ObjectId(),
+    topic: 'Geometry',
+    description: 'Calculating the sine of an angle',
+    syllabus: { HSC: { subject: 'Advanced' } },
+    exampleQuestions: [
+      {
+        question: 'Calculate the sine of a $30^\\circ$ angle.',
+        answer: '$\\sin{30^\\circ} = 0.5$',
+      },
+    ],
+    prerequisiteIds: [],
+  },
+  {
+    _id: new ObjectId(),
+    topic: 'Geometry',
+    description: 'Solving right triangles',
+    syllabus: { HSC: { subject: 'Advanced' } },
+    exampleQuestions: [
+      {
+        question:
+          'In a right triangle with an angle of $45^\\circ$ and a hypotenuse of $10$ cm, calculate the lengths of the other two sides.',
+        answer: 'The other two sides are both approximately $7.07$ cm long.',
+      },
+    ],
+    prerequisiteIds: [],
+  },
+  {
+    _id: new ObjectId(),
+    topic: 'Calculus',
+    description: 'Differentiation of polynomial functions',
+    syllabus: { IB: { subject: 'AI HL' } },
+    exampleQuestions: [
+      {
+        question: 'Find the derivative of $f(x) = 2x^3 - 4x^2 + 6x - 2$.',
+        answer: "$f'(x) = 6x^2 - 8x + 6$",
+      },
+    ],
+
+    prerequisiteIds: [],
+  },
+  {
+    _id: new ObjectId(),
+    topic: 'Calculus',
+    description: 'Integration of polynomial functions',
+    syllabus: { IB: { subject: 'AI HL' } },
+    exampleQuestions: [
+      {
+        question: 'Find the integral of $f(x) = 3x^2 - 2x + 4$.',
+        answer: '$F(x) = x^3 - x^2 + 4x + C$',
+      },
+    ],
+    prerequisiteIds: [],
+  },
+  {
+    _id: new ObjectId(),
+    topic: 'Geometry',
+    description: 'Calculating the volume of a cylinder',
+    syllabus: { AC: { subject: 10 } },
+    exampleQuestions: [
+      {
+        question:
+          'Find the volume of a cylinder with a radius of $3$ cm and a height of $5$ cm.',
+        answer: 'The volume is $45\\pi$ cubic centimeters.',
+      },
+    ],
+    prerequisiteIds: [],
+  },
+  {
+    _id: new ObjectId(),
+    topic: 'Algebra',
+    description: 'Solving systems of linear equations',
+    syllabus: { HSC: { subject: 'Advanced' } },
+    exampleQuestions: [
+      {
+        question:
+          'Solve the system of equations: $\\begin{cases} x + 2y = 7 \\\\ 3x - y = 2 \\end{cases}$',
+        answer: '$x = 1, y = 3$',
+      },
+    ],
+    prerequisiteIds: [],
+  },
+  {
+    _id: new ObjectId(),
+    topic: 'Geometry',
+    description: 'Calculating the cosine of an angle',
+    syllabus: { HSC: { subject: 'Advanced' } },
+    exampleQuestions: [
+      {
+        question: 'Calculate the cosine of a $60^\\circ$ angle.',
+        answer: '$\\cos{60^\\circ} = 0.5$',
+      },
+    ],
+    prerequisiteIds: [],
+  },
+];
+skills[2].prerequisiteIds = [skills[0]._id];
+skills[4].prerequisiteIds = [skills[3]._id];
+skills[5].prerequisiteIds = [skills[2]._id];
+skills[6].prerequisiteIds = [skills[2]._id, skills[5]._id];
+skills[7].prerequisiteIds = [skills[1]._id];
+skills[8].prerequisiteIds = [skills[0]._id, skills[2]._id];
+skills[9].prerequisiteIds = [skills[3]._id, skills[4]._id];
 
 describe('uploadNewSkill', () => {
   it('should create new skills', async () => {
-    for (const testSkill of testSkills) {
-      const uploadedSkill = await uploadNewSkill(testSkill);
-      const downloadedSkill = await getSkillById(testSkill._id);
+    for (const skill of skills) {
+      const uploadedSkill = await createSkill(skill);
+      const downloadedSkill = await getSkillById(skill._id);
 
       expect(downloadedSkill).toMatchObject(uploadedSkill);
     }
   });
 
-  it('should throw an error if skill code is not unique', async () => {
-    await expect(uploadNewSkill(testSkills[0])).rejects.toThrow(
+  it('should throw an error if skill ID is not unique', async () => {
+    await expect(createSkill(skills[0])).rejects.toThrow(
       /E11000 duplicate key error/
     );
   });
 
   it('should throw an error if prerequisite skills do not exist', async () => {
-    let testSkill: Skill = {
-      ...testSkills[1],
+    let skill: Skill = {
+      ...skills[1],
       _id: new ObjectId(),
       prerequisiteIds: [new ObjectId()],
     };
 
-    await expect(uploadNewSkill(testSkill)).rejects.toThrow(
+    await expect(createSkill(skill)).rejects.toThrow(
       "Prerequisite skills don't exist"
     );
   });
@@ -67,28 +197,30 @@ describe('uploadNewSkill', () => {
 
 describe('editSkill', () => {
   it("should update a skill's description", async () => {
-    const testSkill = await getSkillById(testSkills[0]._id);
-    if (testSkill) {
-      const updates = {
+    const skill = await getSkillById(skills[0]._id);
+    if (skill) {
+      const updates: Partial<Skill> = {
         description: 'Basic addition and subtraction',
+        topic: 'Number',
+        syllabus: { HSC: { subject: 'Advanced' }, IB: { subject: 'AI SL' } },
       };
-      await editSkill(testSkill._id, updates);
+      await editSkill(skill._id, updates);
 
-      const updatedSkill = await getSkillById(testSkill._id!);
+      const updatedSkill = await getSkillById(skill._id!);
 
       expect(updatedSkill?.description).toBe(updates.description);
     }
   });
 
   it("should update a skill's prerequisite skills", async () => {
-    const testSkill = await getSkillById(testSkills[4]._id);
-    if (testSkill) {
+    const skill = await getSkillById(skills[4]._id);
+    if (skill) {
       const updates = {
-        prerequisiteIds: [testSkills[0]._id],
+        prerequisiteIds: [skills[0]._id],
       };
-      await editSkill(testSkill._id, updates);
+      await editSkill(skill._id, updates);
 
-      const updatedSkill = await getSkillById(testSkill._id!);
+      const updatedSkill = await getSkillById(skill._id!);
 
       expect(updatedSkill?.prerequisiteIds).toMatchObject(
         updates.prerequisiteIds
@@ -97,26 +229,26 @@ describe('editSkill', () => {
   });
 
   it("should throw an error if prerequisite skills don't exist", async () => {
-    const testSkill = await getSkillById(testSkills[3]._id);
-    if (testSkill) {
+    const skill = await getSkillById(skills[3]._id);
+    if (skill) {
       const updates = {
         prerequisiteIds: [new ObjectId()],
       };
 
-      await expect(editSkill(testSkill._id, updates)).rejects.toThrow(
+      await expect(editSkill(skill._id, updates)).rejects.toThrow(
         `One or more prerequisite skills do not exist.`
       );
     }
   });
 
   it('should throw an error if prerequisite skills create a circular dependency', async () => {
-    const testSkill = await getSkillById(testSkills[0]._id);
-    if (testSkill) {
+    const skill = await getSkillById(skills[0]._id);
+    if (skill) {
       const updates = {
-        prerequisiteIds: [testSkills[5]._id],
+        prerequisiteIds: [skills[5]._id],
       };
 
-      await expect(editSkill(testSkill._id, updates)).rejects.toThrow(
+      await expect(editSkill(skill._id, updates)).rejects.toThrow(
         'Circular dependency detected'
       );
     }
@@ -125,9 +257,9 @@ describe('editSkill', () => {
 
 describe('deleteSkillById', () => {
   it('should delete a skill', async () => {
-    const testSkill = await getSkillById(testSkills[4]._id);
-    if (testSkill) {
-      await expect(deleteSkillById(testSkill._id!)).resolves.toBeUndefined();
+    const skill = await getSkillById(skills[7]._id);
+    if (skill) {
+      await expect(deleteSkillById(skill._id!)).resolves.toBeUndefined();
     }
   });
 
@@ -138,9 +270,9 @@ describe('deleteSkillById', () => {
   });
 
   it('should throw an error if skill is a prerequisite for another skill', async () => {
-    const testSkill = await getSkillById(testSkills[3]._id);
-    if (testSkill) {
-      await expect(deleteSkillById(testSkill._id!)).rejects.toThrow(
+    const skill = await getSkillById(skills[3]._id);
+    if (skill) {
+      await expect(deleteSkillById(skill._id!)).rejects.toThrow(
         /because it is a prerequisite for the following skills/
       );
     }

@@ -13,7 +13,8 @@ export const doDocumentsExist = async <D extends Document>(
   return existingDocumentsCount === documentIds.length;
 };
 
-// check if there is a circular dependency between the specified skill and its prerequisite skills
+// check if there is a circular dependency
+// between the specified skill and its prerequisite skills
 export const isCircularDependency = async (
   skillsCollection: Collection<Skill>,
   skill: Pick<Skill, '_id' | 'prerequisiteIds'>

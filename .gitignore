@@ -1,9 +1,10 @@
-
-
 # dependencies
 /node_modules
 /.pnp
 .pnp.js
+
+# mongodb playground
+*.mongodb.js
 
 # testing
 /coverage
