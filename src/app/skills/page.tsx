@@ -1,38 +1,43 @@
 import { Fragment } from 'react';
 import searchSkills, { Query } from '../api/lib/searchSkills';
-import { COURSES } from '../types/skills';
 import Skill from './Skill';
 import { toPlainSkill } from './utils';
+import SearchForm from './SearchForm';
 
 type Props = {
-  searchParams: Partial<Record<keyof typeof COURSES, string>> & {
-    topic?: string;
-    searchText?: string;
-    prequisitesOf?: string;
-  };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
+const queryKeys: (keyof Query)[] = [
+  'course',
+  'subject',
+  'topic',
+  'code',
+  'searchText',
+];
+const parseSearchParams = (searchParams: Props['searchParams']) => {
+  const parsed: Partial<Query> = {};
+  for (const key of queryKeys) {
+    if (searchParams[key] !== undefined) {
+      if (typeof searchParams[key] === 'string') {
+        parsed[key] = searchParams[key] as string;
+      } else {
+        parsed[key] = (searchParams[key] as string[])[0];
+      }
+    }
+  }
+  return parsed;
 };
 
 export default async function Skills({ searchParams }: Props) {
-  const query: Query = {};
-
-  for (const course in COURSES) {
-    const subject = searchParams[course as keyof typeof COURSES];
-    if (subject) {
-      query.syllabus = { [course]: subject };
-    }
-  }
-  if (searchParams.topic) {
-    query.topic = searchParams.topic;
-  }
-  if (searchParams.searchText) {
-    query.searchText = searchParams.searchText;
-  }
-
-  const skills = await searchSkills(query);
+  const parsedParams = parseSearchParams(searchParams);
+  const skills = await searchSkills(parsedParams);
 
   return (
     <main>
       <h1>Skills</h1>
+      <h2>Search</h2>
+      <SearchForm parsedParams={parsedParams} />
       {skills.map((skill) => (
         <Fragment key={skill._id.toHexString()}>
           <Skill skill={toPlainSkill(skill)} />

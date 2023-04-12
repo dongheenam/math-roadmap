@@ -1,31 +1,65 @@
 import { Filter } from 'mongodb';
 
 import client, { getSkillsCollection } from './mongoClient';
-import { COURSES, Skill } from '@/app/types/skills';
+import { Skill, COURSES, SUBJECTS, TOPICS } from '@/app/types/skills';
 
 export type Query = {
-  syllabus?: {
-    [course in keyof typeof COURSES]?: string;
-  };
+  course?: string;
+  subject?: string;
   topic?: string;
+  code?: string;
   searchText?: string;
+};
+
+const verifyQuery = (query: Query): Query => {
+  const verifiedQuery: Query = {};
+  if (query.searchText) {
+    verifiedQuery.searchText = query.searchText;
+  }
+
+  if (query.course && COURSES.includes(query.course)) {
+    verifiedQuery.course = query.course;
+
+    const possibleSubjects = SUBJECTS[query.course];
+    if (query.subject && possibleSubjects.includes(query.subject)) {
+      verifiedQuery.subject = query.subject;
+    }
+    const possibleTopics = TOPICS[query.course];
+    if (query.topic && possibleTopics.includes(query.topic)) {
+      verifiedQuery.topic = query.topic;
+    }
+  }
+
+  return verifiedQuery;
 };
 
 const searchSkills = async (query: Query): Promise<Skill[]> => {
   const skillsCollection = getSkillsCollection(client);
   const filter: Filter<Skill> = {};
 
-  if (query.syllabus) {
-    for (const [key, value] of Object.entries(query.syllabus)) {
-      filter[`syllabus.${key}.subject`] =
-        key === 'AC' ? parseInt(value) : value;
+  const verifiedQuery = verifyQuery(query);
+
+  if (verifiedQuery.course) {
+    const course = verifiedQuery.course;
+    let courseOnly = true;
+    if (verifiedQuery.subject) {
+      courseOnly = false;
+      filter[`syllabus.${course}.subject`] = verifiedQuery.subject;
+    }
+    if (verifiedQuery.topic) {
+      courseOnly = false;
+      filter[`syllabus.${course}.topic`] = verifiedQuery.topic;
+    }
+    if (verifiedQuery.code) {
+      courseOnly = false;
+      filter[`syllabus.${course}.code`] = verifiedQuery.code;
+    }
+    if (courseOnly) {
+      filter[`syllabus.${course}`] = { $exists: true };
     }
   }
-  if (query.topic) {
-    filter.$topic = query.topic;
-  }
-  if (query.searchText) {
-    filter.$text = { $search: query.searchText };
+  if (verifiedQuery.searchText) {
+    filter.$text = { $search: verifiedQuery.searchText };
   }
 
   try {

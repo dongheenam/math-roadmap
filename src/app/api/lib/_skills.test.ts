@@ -24,9 +24,8 @@ afterAll(async () => {
 const skills: Skill[] = [
   {
     _id: new ObjectId(),
-    topic: 'Algebra',
     description: 'Solving simple linear equations',
-    syllabus: { AC: { subject: 7 } },
+    syllabus: { AC: { subject: '7', topic: 'Algebra' } },
     exampleQuestions: [
       {
         question: 'Solve for $x$: $2x + 4 = 10$',
@@ -37,9 +36,8 @@ const skills: Skill[] = [
   },
   {
     _id: new ObjectId(),
-    topic: 'Geometry',
     description: 'Calculating the area of a triangle',
-    syllabus: { AC: { subject: 7 } },
+    syllabus: { AC: { subject: '7', topic: 'Space' } },
     exampleQuestions: [
       {
         question:
@@ -51,9 +49,8 @@ const skills: Skill[] = [
   },
   {
     _id: new ObjectId(),
-    topic: 'Algebra',
     description: 'Solving quadratic equations',
-    syllabus: { AC: { subject: 10 } },
+    syllabus: { AC: { subject: '10', topic: 'Algebra' } },
     exampleQuestions: [
       {
         question: 'Solve for $x$: $x^2 - 4x + 4 = 0$',
@@ -64,9 +61,8 @@ const skills: Skill[] = [
   },
   {
     _id: new ObjectId(),
-    topic: 'Geometry',
     description: 'Calculating the sine of an angle',
-    syllabus: { HSC: { subject: 'Advanced' } },
+    syllabus: { AC: { subject: '9', topic: 'Space' } },
     exampleQuestions: [
       {
         question: 'Calculate the sine of a $30^\\circ$ angle.',
@@ -77,9 +73,8 @@ const skills: Skill[] = [
   },
   {
     _id: new ObjectId(),
-    topic: 'Geometry',
     description: 'Solving right triangles',
-    syllabus: { HSC: { subject: 'Advanced' } },
+    syllabus: { AC: { subject: '9', topic: 'Space' } },
     exampleQuestions: [
       {
         question:
@@ -91,9 +86,8 @@ const skills: Skill[] = [
   },
   {
     _id: new ObjectId(),
-    topic: 'Calculus',
     description: 'Differentiation of polynomial functions',
-    syllabus: { IB: { subject: 'AI HL' } },
+    syllabus: { IB: { subject: 'AI HL', topic: 'Calculus' } },
     exampleQuestions: [
       {
         question: 'Find the derivative of $f(x) = 2x^3 - 4x^2 + 6x - 2$.',
@@ -105,9 +99,8 @@ const skills: Skill[] = [
   },
   {
     _id: new ObjectId(),
-    topic: 'Calculus',
     description: 'Integration of polynomial functions',
-    syllabus: { IB: { subject: 'AI HL' } },
+    syllabus: { IB: { subject: 'AI HL', topic: 'Calculus' } },
     exampleQuestions: [
       {
         question: 'Find the integral of $f(x) = 3x^2 - 2x + 4$.',
@@ -118,9 +111,8 @@ const skills: Skill[] = [
   },
   {
     _id: new ObjectId(),
-    topic: 'Geometry',
     description: 'Calculating the volume of a cylinder',
-    syllabus: { AC: { subject: 10 } },
+    syllabus: { AC: { subject: '10', topic: 'Space' } },
     exampleQuestions: [
       {
         question:
@@ -132,9 +124,8 @@ const skills: Skill[] = [
   },
   {
     _id: new ObjectId(),
-    topic: 'Algebra',
     description: 'Solving systems of linear equations',
-    syllabus: { HSC: { subject: 'Advanced' } },
+    syllabus: { AC: { subject: '10', topic: 'Algebra' } },
     exampleQuestions: [
       {
         question:
@@ -146,9 +137,8 @@ const skills: Skill[] = [
   },
   {
     _id: new ObjectId(),
-    topic: 'Geometry',
     description: 'Calculating the cosine of an angle',
-    syllabus: { HSC: { subject: 'Advanced' } },
+    syllabus: { AC: { subject: '9', topic: 'Space' } },
     exampleQuestions: [
       {
         question: 'Calculate the cosine of a $60^\\circ$ angle.',
@@ -201,8 +191,7 @@ describe('editSkill', () => {
     if (skill) {
       const updates: Partial<Skill> = {
         description: 'Basic addition and subtraction',
-        topic: 'Number',
-        syllabus: { HSC: { subject: 'Advanced' }, IB: { subject: 'AI SL' } },
+        syllabus: { IB: { subject: 'AI SL', topic: 'Number and Algebra' } },
       };
       await editSkill(skill._id, updates);
 
