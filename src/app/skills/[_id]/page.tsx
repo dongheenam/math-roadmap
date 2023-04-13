@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 
 import getSkillById from '@/app/skills/lib/getSkillById';
 import getPrerequisiteSkills from '../lib/getPrerequisiteSkills';
-import PrerequisitesList from './PrerequisitesList';
+import SkillsList from '../SkillsList';
 
 type Props = {
   params: { _id: string };
@@ -38,8 +38,9 @@ export default async function Page({ params }: Props) {
           <span>{item.answer}</span>
         </details>
       ))}
+      <h3>Prerequisites</h3>
       <Suspense>
-        <PrerequisitesList prerequisites={prerequisites} />
+        <SkillsList skills={prerequisites} />
       </Suspense>
     </main>
   );

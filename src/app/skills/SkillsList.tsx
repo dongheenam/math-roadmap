@@ -2,15 +2,14 @@ import Link from 'next/link';
 
 import { Skill } from '@/app/types/skills';
 
-type SkillWithDepth = Skill & { depth: number };
-type Props = { prerequisites: SkillWithDepth[] };
+type Props = { skills: Skill[] };
 
-export default function PrerequisitesList({ prerequisites }: Props) {
+export default function SkillsList({ skills }: Props) {
   const prerequisitesView =
-    prerequisites.length === 0 ? (
-      <p>No prerequisites!</p>
+    skills.length === 0 ? (
+      <p>No skills!</p>
     ) : (
-      prerequisites.map((skill) => (
+      skills.map((skill) => (
         <li key={skill._id.toHexString()}>
           <Link href={`/skills/${skill._id}`}>
             {skill.description} ({skill.syllabuses[0]['course']}{' '}
@@ -20,10 +19,5 @@ export default function PrerequisitesList({ prerequisites }: Props) {
       ))
     );
 
-  return (
-    <>
-      <h3>Prerequisites</h3>
-      <ol>{prerequisitesView}</ol>
-    </>
-  );
+  return <ol>{prerequisitesView}</ol>;
 }

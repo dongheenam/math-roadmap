@@ -1,4 +1,6 @@
+import searchSkills from '@/app/skills/lib/searchSkills';
 import getUnitById from '../lib/getUnitById';
+import SkillsList from '@/app/skills/SkillsList';
 
 type Props = {
   params: { _id: string };
@@ -10,6 +12,8 @@ export default async function Page({ params }: Props) {
   if (!unit) {
     throw new Error('Unit not found!');
   }
+
+  const skills = await searchSkills({ code: unit.codes });
 
   return (
     <main>
@@ -24,7 +28,7 @@ export default async function Page({ params }: Props) {
         ))}
       </ul>
       <h3>Skills</h3>
-      {/* <SkillsList _ids={unit.skills} /> */}
+      <SkillsList skills={skills} />
     </main>
   );
 }

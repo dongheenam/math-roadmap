@@ -7,12 +7,12 @@ export type Query = {
   course?: string;
   subject?: string;
   topic?: string;
-  code?: string;
+  code?: string | string[];
   text?: string;
 };
 
 type VerifiedQueryWithoutCourse = {
-  code?: string;
+  code?: string | string[];
   topic?: typeof TOPICS[number];
   text?: string;
 };
@@ -60,11 +60,18 @@ const searchSkills = async (query: Query): Promise<Skill[]> => {
   };
 
   if (course || subject || code) {
+    let codeFilter;
+    if (Array.isArray(code)) {
+      codeFilter = { $in: code };
+    } else if (code) {
+      codeFilter = code;
+    }
+
     filter.syllabuses = {
       $elemMatch: {
         ...(course && { course }),
         ...(subject && { subject }),
-        ...(code && { code }),
+        ...(codeFilter && { code: codeFilter }),
       },
     };
   }
