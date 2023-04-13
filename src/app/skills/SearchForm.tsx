@@ -41,7 +41,7 @@ const verifyParams = (parsedParams: Partial<Query>): Partial<State> => {
   if (text) {
     verifiedParams.text = text;
   }
-  if (code) {
+  if (code && !Array.isArray(code)) {
     verifiedParams.code = code;
   }
 
