@@ -3,7 +3,11 @@ import { ObjectId } from 'mongodb';
 import client, { getSkillsCollection } from './mongoClient';
 import { Skill } from '@/app/types/skills';
 
-const getPrerequisiteSkills = async (skillId: ObjectId): Promise<Skill[]> => {
+type SkillWithDepth = Skill & { depth: number };
+
+const getPrerequisiteSkills = async (
+  skillId: string | ObjectId
+): Promise<SkillWithDepth[]> => {
   const skillsCollection = getSkillsCollection(client);
 
   try {
@@ -18,6 +22,7 @@ const getPrerequisiteSkills = async (skillId: ObjectId): Promise<Skill[]> => {
             startWith: '$prerequisiteIds',
             connectFromField: 'prerequisiteIds',
             connectToField: '_id',
+            depthField: 'depth',
             as: 'prerequisites',
           },
         },
@@ -28,7 +33,7 @@ const getPrerequisiteSkills = async (skillId: ObjectId): Promise<Skill[]> => {
       .toArray();
 
     if (results.length === 0) {
-      throw new Error('The skill has no dependencies!');
+      return [];
     }
     return results[0].prerequisites;
   } catch (error) {

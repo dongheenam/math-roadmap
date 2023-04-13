@@ -11,7 +11,18 @@ export type Query = {
   searchText?: string;
 };
 
-const verifyQuery = (query: Query): Query => {
+type VerifiedQueryWithoutCourse = {
+  code?: string;
+  searchText?: string;
+};
+type VerifiedQueryWithCourse = VerifiedQueryWithoutCourse & {
+  course: typeof COURSES[number];
+  subject?: typeof SUBJECTS[VerifiedQueryWithCourse['course']][number];
+  topic?: typeof TOPICS[VerifiedQueryWithCourse['course']][number];
+};
+type VerifiedQuery = VerifiedQueryWithoutCourse | VerifiedQueryWithCourse;
+
+const verifyQuery = (query: Query): VerifiedQuery => {
   const verifiedQuery: Query = {};
   if (query.searchText) {
     verifiedQuery.searchText = query.searchText;
@@ -30,7 +41,7 @@ const verifyQuery = (query: Query): Query => {
     }
   }
 
-  return verifiedQuery;
+  return verifiedQuery as VerifiedQuery;
 };
 
 const searchSkills = async (query: Query): Promise<Skill[]> => {
@@ -39,9 +50,10 @@ const searchSkills = async (query: Query): Promise<Skill[]> => {
 
   const verifiedQuery = verifyQuery(query);
 
-  if (verifiedQuery.course) {
+  if ('course' in verifiedQuery) {
     const course = verifiedQuery.course;
     let courseOnly = true;
+
     if (verifiedQuery.subject) {
       courseOnly = false;
       filter[`syllabus.${course}.subject`] = verifiedQuery.subject;
@@ -61,7 +73,6 @@ const searchSkills = async (query: Query): Promise<Skill[]> => {
   if (verifiedQuery.searchText) {
     filter.$text = { $search: verifiedQuery.searchText };
   }
-
   try {
     const skills = await skillsCollection.find(filter).toArray();
     return skills;

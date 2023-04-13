@@ -1,160 +1,164 @@
-import { Skill } from '@/app/types/skills';
+import { COURSES, SUBJECTS, Skill } from '@/app/types/skills';
 import { MongoClient, Db, ObjectId } from 'mongodb';
 import createSkill from './createSkill';
 import client from './mongoClient';
 import getSkillById from './getSkillById';
 import editSkill from './editSkill';
 import deleteSkillById from './deleteSkillById';
+import searchSkills from './searchSkills';
+import { chooseRandom } from '@/common/utils';
 
 // Mock database connection
 let connection: MongoClient;
 let db: Db;
+let skills: Skill[];
 
 // Set up database connection before tests
 beforeAll(async () => {
   connection = client;
   db = client.db();
+  await db.collection('skills').createIndex({ description: 'text' });
+
+  // Mock data sets
+  skills = [
+    {
+      _id: new ObjectId(),
+      description: 'Solving simple linear equations',
+      syllabus: { AC: { subject: '7', topic: 'Algebra' } },
+      exampleQuestions: [
+        {
+          question: 'Solve for $x$: $2x + 4 = 10$',
+          answer: '$x = 3$',
+        },
+      ],
+      prerequisiteIds: [],
+    },
+    {
+      _id: new ObjectId(),
+      description: 'Calculating the area of a triangle',
+      syllabus: { AC: { subject: '7', topic: 'Space' } },
+      exampleQuestions: [
+        {
+          question:
+            'Calculate the area of a triangle with a base of $6$ cm and a height of $4$ cm.',
+          answer: 'The area is $12$ square centimeters.',
+        },
+      ],
+      prerequisiteIds: [],
+    },
+    {
+      _id: new ObjectId(),
+      description: 'Solving quadratic equations',
+      syllabus: { AC: { subject: '10', topic: 'Algebra' } },
+      exampleQuestions: [
+        {
+          question: 'Solve for $x$: $x^2 - 4x + 4 = 0$',
+          answer: '$x = 2$',
+        },
+      ],
+      prerequisiteIds: [],
+    },
+    {
+      _id: new ObjectId(),
+      description: 'Calculating the sine of an angle',
+      syllabus: { AC: { subject: '9', topic: 'Space' } },
+      exampleQuestions: [
+        {
+          question: 'Calculate the sine of a $30^\\circ$ angle.',
+          answer: '$\\sin{30^\\circ} = 0.5$',
+        },
+      ],
+      prerequisiteIds: [],
+    },
+    {
+      _id: new ObjectId(),
+      description: 'Solving right triangles',
+      syllabus: { AC: { subject: '9', topic: 'Space' } },
+      exampleQuestions: [
+        {
+          question:
+            'In a right triangle with an angle of $45^\\circ$ and a hypotenuse of $10$ cm, calculate the lengths of the other two sides.',
+          answer: 'The other two sides are both approximately $7.07$ cm long.',
+        },
+      ],
+      prerequisiteIds: [],
+    },
+    {
+      _id: new ObjectId(),
+      description: 'Differentiation of polynomial functions',
+      syllabus: { IB: { subject: 'AI HL', topic: 'Calculus' } },
+      exampleQuestions: [
+        {
+          question: 'Find the derivative of $f(x) = 2x^3 - 4x^2 + 6x - 2$.',
+          answer: "$f'(x) = 6x^2 - 8x + 6$",
+        },
+      ],
+
+      prerequisiteIds: [],
+    },
+    {
+      _id: new ObjectId(),
+      description: 'Integration of polynomial functions',
+      syllabus: { IB: { subject: 'AI HL', topic: 'Calculus' } },
+      exampleQuestions: [
+        {
+          question: 'Find the integral of $f(x) = 3x^2 - 2x + 4$.',
+          answer: '$F(x) = x^3 - x^2 + 4x + C$',
+        },
+      ],
+      prerequisiteIds: [],
+    },
+    {
+      _id: new ObjectId(),
+      description: 'Calculating the volume of a cylinder',
+      syllabus: { AC: { subject: '10', topic: 'Space' } },
+      exampleQuestions: [
+        {
+          question:
+            'Find the volume of a cylinder with a radius of $3$ cm and a height of $5$ cm.',
+          answer: 'The volume is $45\\pi$ cubic centimeters.',
+        },
+      ],
+      prerequisiteIds: [],
+    },
+    {
+      _id: new ObjectId(),
+      description: 'Solving systems of linear equations',
+      syllabus: { AC: { subject: '10', topic: 'Algebra' } },
+      exampleQuestions: [
+        {
+          question:
+            'Solve the system of equations: $\\begin{cases} x + 2y = 7 \\\\ 3x - y = 2 \\end{cases}$',
+          answer: '$x = 1, y = 3$',
+        },
+      ],
+      prerequisiteIds: [],
+    },
+    {
+      _id: new ObjectId(),
+      description: 'Calculating the cosine of an angle',
+      syllabus: { AC: { subject: '9', topic: 'Space' } },
+      exampleQuestions: [
+        {
+          question: 'Calculate the cosine of a $60^\\circ$ angle.',
+          answer: '$\\cos{60^\\circ} = 0.5$',
+        },
+      ],
+      prerequisiteIds: [],
+    },
+  ];
+  skills[2].prerequisiteIds = [skills[0]._id];
+  skills[4].prerequisiteIds = [skills[3]._id];
+  skills[5].prerequisiteIds = [skills[2]._id];
+  skills[6].prerequisiteIds = [skills[2]._id, skills[5]._id];
+  skills[7].prerequisiteIds = [skills[1]._id];
+  skills[8].prerequisiteIds = [skills[0]._id, skills[2]._id];
+  skills[9].prerequisiteIds = [skills[3]._id, skills[4]._id];
 });
 
 afterAll(async () => {
   await connection.close();
 });
-
-// Mock data sets
-const skills: Skill[] = [
-  {
-    _id: new ObjectId(),
-    description: 'Solving simple linear equations',
-    syllabus: { AC: { subject: '7', topic: 'Algebra' } },
-    exampleQuestions: [
-      {
-        question: 'Solve for $x$: $2x + 4 = 10$',
-        answer: '$x = 3$',
-      },
-    ],
-    prerequisiteIds: [],
-  },
-  {
-    _id: new ObjectId(),
-    description: 'Calculating the area of a triangle',
-    syllabus: { AC: { subject: '7', topic: 'Space' } },
-    exampleQuestions: [
-      {
-        question:
-          'Calculate the area of a triangle with a base of $6$ cm and a height of $4$ cm.',
-        answer: 'The area is $12$ square centimeters.',
-      },
-    ],
-    prerequisiteIds: [],
-  },
-  {
-    _id: new ObjectId(),
-    description: 'Solving quadratic equations',
-    syllabus: { AC: { subject: '10', topic: 'Algebra' } },
-    exampleQuestions: [
-      {
-        question: 'Solve for $x$: $x^2 - 4x + 4 = 0$',
-        answer: '$x = 2$',
-      },
-    ],
-    prerequisiteIds: [],
-  },
-  {
-    _id: new ObjectId(),
-    description: 'Calculating the sine of an angle',
-    syllabus: { AC: { subject: '9', topic: 'Space' } },
-    exampleQuestions: [
-      {
-        question: 'Calculate the sine of a $30^\\circ$ angle.',
-        answer: '$\\sin{30^\\circ} = 0.5$',
-      },
-    ],
-    prerequisiteIds: [],
-  },
-  {
-    _id: new ObjectId(),
-    description: 'Solving right triangles',
-    syllabus: { AC: { subject: '9', topic: 'Space' } },
-    exampleQuestions: [
-      {
-        question:
-          'In a right triangle with an angle of $45^\\circ$ and a hypotenuse of $10$ cm, calculate the lengths of the other two sides.',
-        answer: 'The other two sides are both approximately $7.07$ cm long.',
-      },
-    ],
-    prerequisiteIds: [],
-  },
-  {
-    _id: new ObjectId(),
-    description: 'Differentiation of polynomial functions',
-    syllabus: { IB: { subject: 'AI HL', topic: 'Calculus' } },
-    exampleQuestions: [
-      {
-        question: 'Find the derivative of $f(x) = 2x^3 - 4x^2 + 6x - 2$.',
-        answer: "$f'(x) = 6x^2 - 8x + 6$",
-      },
-    ],
-
-    prerequisiteIds: [],
-  },
-  {
-    _id: new ObjectId(),
-    description: 'Integration of polynomial functions',
-    syllabus: { IB: { subject: 'AI HL', topic: 'Calculus' } },
-    exampleQuestions: [
-      {
-        question: 'Find the integral of $f(x) = 3x^2 - 2x + 4$.',
-        answer: '$F(x) = x^3 - x^2 + 4x + C$',
-      },
-    ],
-    prerequisiteIds: [],
-  },
-  {
-    _id: new ObjectId(),
-    description: 'Calculating the volume of a cylinder',
-    syllabus: { AC: { subject: '10', topic: 'Space' } },
-    exampleQuestions: [
-      {
-        question:
-          'Find the volume of a cylinder with a radius of $3$ cm and a height of $5$ cm.',
-        answer: 'The volume is $45\\pi$ cubic centimeters.',
-      },
-    ],
-    prerequisiteIds: [],
-  },
-  {
-    _id: new ObjectId(),
-    description: 'Solving systems of linear equations',
-    syllabus: { AC: { subject: '10', topic: 'Algebra' } },
-    exampleQuestions: [
-      {
-        question:
-          'Solve the system of equations: $\\begin{cases} x + 2y = 7 \\\\ 3x - y = 2 \\end{cases}$',
-        answer: '$x = 1, y = 3$',
-      },
-    ],
-    prerequisiteIds: [],
-  },
-  {
-    _id: new ObjectId(),
-    description: 'Calculating the cosine of an angle',
-    syllabus: { AC: { subject: '9', topic: 'Space' } },
-    exampleQuestions: [
-      {
-        question: 'Calculate the cosine of a $60^\\circ$ angle.',
-        answer: '$\\cos{60^\\circ} = 0.5$',
-      },
-    ],
-    prerequisiteIds: [],
-  },
-];
-skills[2].prerequisiteIds = [skills[0]._id];
-skills[4].prerequisiteIds = [skills[3]._id];
-skills[5].prerequisiteIds = [skills[2]._id];
-skills[6].prerequisiteIds = [skills[2]._id, skills[5]._id];
-skills[7].prerequisiteIds = [skills[1]._id];
-skills[8].prerequisiteIds = [skills[0]._id, skills[2]._id];
-skills[9].prerequisiteIds = [skills[3]._id, skills[4]._id];
 
 describe('uploadNewSkill', () => {
   it('should create new skills', async () => {
@@ -182,6 +186,43 @@ describe('uploadNewSkill', () => {
     await expect(createSkill(skill)).rejects.toThrow(
       "Prerequisite skills don't exist"
     );
+  });
+});
+
+describe('searchSkills', () => {
+  it('should fetch all skills when the query is empty', async () => {
+    const fetchedSkills = await searchSkills({});
+    expect(fetchedSkills.length).toEqual(skills.length);
+  });
+
+  it('should fetch skills by syllabus', async () => {
+    for (let i = 0; i < 10; i++) {
+      const randomCourse = chooseRandom(COURSES);
+      const randomSubject = chooseRandom(SUBJECTS[randomCourse]);
+      const fetchedSkills = await searchSkills({
+        course: randomCourse,
+        subject: randomSubject,
+      });
+      const expectedSkills = skills.filter(
+        (skill) =>
+          randomCourse in skill.syllabus &&
+          skill.syllabus[randomCourse]!.subject === randomSubject
+      );
+      expect(fetchedSkills.length).toEqual(expectedSkills.length);
+    }
+  });
+
+  it('should search texts correctly', async () => {
+    const fetchedSkills = await searchSkills({ searchText: 'volume' });
+    const expectedSkills = skills.filter((skill) =>
+      skill.description.toLowerCase().includes('volume')
+    );
+    expect(fetchedSkills.length).toEqual(expectedSkills.length);
+  });
+
+  it("should return an empty array if the query doesn't match any skills", async () => {
+    const fetchedSkills = await searchSkills({ searchText: 'random text' });
+    expect(fetchedSkills.length).toEqual(0);
   });
 });
 

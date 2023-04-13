@@ -13,7 +13,7 @@ type Props = {
 type State = {
   course: typeof COURSES[number];
   subject: typeof SUBJECTS[State['course']][number];
-  topic: string;
+  topic: typeof TOPICS[State['course']][number];
   code: string;
   searchText: string;
 };
@@ -52,7 +52,7 @@ const verifyParams = (parsedParams: Partial<Query>): Partial<State> => {
     }
     const possibleTopics = TOPICS[course];
     if (parsedParams.topic && parsedParams.topic in possibleTopics) {
-      verifiedParams.topic = parsedParams.topic;
+      verifiedParams.topic = parsedParams.topic as State['topic'];
     }
   }
 
@@ -111,7 +111,7 @@ export default function SearchForm({ parsedParams }: Props) {
           value={state.topic}
           onChange={(e) =>
             updateState({
-              topic: e.target.value,
+              topic: e.target.value as State['topic'],
             })
           }
         >

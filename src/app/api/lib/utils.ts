@@ -4,10 +4,11 @@ import { Collection, Document, ObjectId } from 'mongodb';
 // check if all documents with specified IDs exist in the collection
 export const doDocumentsExist = async <D extends Document>(
   collection: Collection<D>,
-  documentIds: ObjectId[]
+  documentIds: ObjectId[] | string[]
 ): Promise<boolean> => {
+  const _ids = documentIds.map((id) => new ObjectId(id));
   const existingDocumentsCount = await collection.countDocuments({
-    _id: { $in: documentIds },
+    _id: { $in: _ids },
   });
 
   return existingDocumentsCount === documentIds.length;

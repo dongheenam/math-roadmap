@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import searchSkills, { Query } from '../api/lib/searchSkills';
-import Skill from './Skill';
+import Skill from './SkillSummary';
 import { toPlainSkill } from './utils';
 import SearchForm from './SearchForm';
 
