@@ -13,9 +13,9 @@ type Props = {
 type State = {
   course: typeof COURSES[number];
   subject: typeof SUBJECTS[State['course']][number];
-  topic: typeof TOPICS[State['course']][number];
+  topic: typeof TOPICS[number];
   code: string;
-  searchText: string;
+  text: string;
 };
 
 const INITIAL_STATE: State = {
@@ -23,36 +23,38 @@ const INITIAL_STATE: State = {
   subject: '7',
   code: '',
   topic: 'Number',
-  searchText: '',
+  text: '',
 };
 const updater = (prev: State, next: Partial<State>) => {
   const updates = { ...next };
 
   if (updates.course) {
     updates.subject = SUBJECTS[updates.course][0];
-    updates.topic = TOPICS[updates.course][0];
   }
 
   return { ...prev, ...updates };
 };
 
 const verifyParams = (parsedParams: Partial<Query>): Partial<State> => {
+  const { course, subject, topic, code, text } = parsedParams;
   const verifiedParams: Partial<State> = {};
-  if (parsedParams.searchText) {
-    verifiedParams.searchText = parsedParams.searchText;
+  if (text) {
+    verifiedParams.text = text;
+  }
+  if (code) {
+    verifiedParams.code = code;
   }
 
-  if (parsedParams.course && parsedParams.course in SUBJECTS) {
-    const course = parsedParams.course as State['course'];
+  if (topic && TOPICS.includes(topic)) {
+    verifiedParams.topic = topic;
+  }
+
+  if (course && COURSES.includes(course)) {
     verifiedParams.course = course;
 
     const possibleSubjects = SUBJECTS[course];
-    if (parsedParams.subject && parsedParams.subject in possibleSubjects) {
-      verifiedParams.subject = parsedParams.subject as State['subject'];
-    }
-    const possibleTopics = TOPICS[course];
-    if (parsedParams.topic && parsedParams.topic in possibleTopics) {
-      verifiedParams.topic = parsedParams.topic as State['topic'];
+    if (subject && possibleSubjects.includes(subject)) {
+      verifiedParams.subject = subject;
     }
   }
 
@@ -77,6 +79,22 @@ export default function SearchForm({ parsedParams }: Props) {
   return (
     <>
       <form onSubmit={handleSubmit}>
+        <label htmlFor="topic">Topic:</label>
+        <select
+          id="topic"
+          value={state.topic}
+          onChange={(e) =>
+            updateState({
+              topic: e.target.value as State['topic'],
+            })
+          }
+        >
+          {TOPICS.map((topic) => (
+            <option key={topic} value={topic}>
+              {topic}
+            </option>
+          ))}
+        </select>
         <label htmlFor="course">Course:</label>
         <select
           id="course"
@@ -105,29 +123,12 @@ export default function SearchForm({ parsedParams }: Props) {
               </option>
             ))}
         </select>
-        <label htmlFor="topic">Topic:</label>
-        <select
-          id="topic"
-          value={state.topic}
-          onChange={(e) =>
-            updateState({
-              topic: e.target.value as State['topic'],
-            })
-          }
-        >
-          {TOPICS[state.course] &&
-            TOPICS[state.course].map((topic) => (
-              <option key={topic} value={topic}>
-                {topic}
-              </option>
-            ))}
-        </select>
         <label htmlFor="search-text">Search text:</label>
         <input
           id="search-text"
           type="text"
-          value={state.searchText}
-          onChange={(e) => updateState({ searchText: e.target.value })}
+          value={state.text}
+          onChange={(e) => updateState({ text: e.target.value })}
         />
         <button type="submit">Search</button>
       </form>

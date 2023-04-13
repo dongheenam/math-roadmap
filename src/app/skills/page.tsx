@@ -13,7 +13,7 @@ const queryKeys: (keyof Query)[] = [
   'subject',
   'topic',
   'code',
-  'searchText',
+  'text',
 ];
 const parseSearchParams = (searchParams: Props['searchParams']) => {
   const parsed: Partial<Query> = {};

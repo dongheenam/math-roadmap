@@ -12,23 +12,15 @@ export default async function Page({ params }: Props) {
     throw new Error('Skill not found!');
   }
 
-  const syllabusAC = skill.syllabus.AC;
-  const syllabusIB = skill.syllabus.IB;
-
   return (
     <main>
       <h2>{skill.description}</h2>
       <ul>
-        {syllabusAC && (
-          <li>
-            Australian Curriculum: Year {syllabusAC.subject} {syllabusAC.topic}
+        {skill.syllabuses.map(({ course, subject, code }) => (
+          <li key={course}>
+            {course} {subject} {code && <>{code}</>}
           </li>
-        )}
-        {syllabusIB && (
-          <li>
-            IBDP: {syllabusIB.topic} {syllabusIB.subject}
-          </li>
-        )}
+        ))}
       </ul>
       <h3>Example questions</h3>
       {skill.exampleQuestions.map((item, idx) => (

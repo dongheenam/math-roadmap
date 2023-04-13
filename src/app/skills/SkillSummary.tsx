@@ -14,19 +14,19 @@ export default function Skills({ skill }: Props) {
   };
 
   const syllabuses = [];
-  for (const [course, { subject, topic, code }] of Object.entries(
-    skill.syllabus
-  )) {
+  for (const { course, subject, code } of skill.syllabuses) {
     syllabuses.push(
       <span key={course}>
-        {course} {subject} {topic} {code && <>({code})</>}
+        {course} {subject} {code && <>({code})</>}
       </span>
     );
   }
   return (
     <div>
       <h3>{skill.description}</h3>
-      <p>{syllabuses}</p>
+      <p>
+        {skill.topic}: {syllabuses}
+      </p>
       <button onClick={onClickView}>View</button>
     </div>
   );

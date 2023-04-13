@@ -37,7 +37,10 @@ export default function Prerequisites({ _id }: Props) {
     ) : (
       prerequisites.map((skill) => (
         <li key={skill._id}>
-          <Link href={`/skills/${skill._id}`}>{skill.description}</Link>
+          <Link href={`/skills/${skill._id}`}>
+            {skill.description} ({skill.syllabuses[0]['course']}{' '}
+            {skill.syllabuses[0]['subject']})
+          </Link>
         </li>
       ))
     );

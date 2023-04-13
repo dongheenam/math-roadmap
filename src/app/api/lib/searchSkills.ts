@@ -8,36 +8,40 @@ export type Query = {
   subject?: string;
   topic?: string;
   code?: string;
-  searchText?: string;
+  text?: string;
 };
 
 type VerifiedQueryWithoutCourse = {
   code?: string;
-  searchText?: string;
+  topic?: typeof TOPICS[number];
+  text?: string;
 };
 type VerifiedQueryWithCourse = VerifiedQueryWithoutCourse & {
   course: typeof COURSES[number];
   subject?: typeof SUBJECTS[VerifiedQueryWithCourse['course']][number];
-  topic?: typeof TOPICS[VerifiedQueryWithCourse['course']][number];
 };
 type VerifiedQuery = VerifiedQueryWithoutCourse | VerifiedQueryWithCourse;
 
 const verifyQuery = (query: Query): VerifiedQuery => {
+  const { text, course, subject, topic, code } = query;
   const verifiedQuery: Query = {};
-  if (query.searchText) {
-    verifiedQuery.searchText = query.searchText;
+
+  if (text) {
+    verifiedQuery.text = text;
+  }
+  if (code) {
+    verifiedQuery.code = code;
+  }
+  if (topic && TOPICS.includes(topic)) {
+    verifiedQuery.topic = topic;
   }
 
-  if (query.course && COURSES.includes(query.course)) {
-    verifiedQuery.course = query.course;
+  if (course && COURSES.includes(course)) {
+    verifiedQuery.course = course;
 
-    const possibleSubjects = SUBJECTS[query.course];
-    if (query.subject && possibleSubjects.includes(query.subject)) {
-      verifiedQuery.subject = query.subject;
-    }
-    const possibleTopics = TOPICS[query.course];
-    if (query.topic && possibleTopics.includes(query.topic)) {
-      verifiedQuery.topic = query.topic;
+    const possibleSubjects = SUBJECTS[course];
+    if (subject && possibleSubjects.includes(subject)) {
+      verifiedQuery.subject = subject;
     }
   }
 
@@ -49,36 +53,31 @@ const searchSkills = async (query: Query): Promise<Skill[]> => {
   const filter: Filter<Skill> = {};
 
   const verifiedQuery = verifyQuery(query);
+  const { course, subject, topic, code, text } = {
+    course: undefined,
+    subject: undefined,
+    ...verifiedQuery,
+  };
 
-  if ('course' in verifiedQuery) {
-    const course = verifiedQuery.course;
-    let courseOnly = true;
+  if (course || subject || code) {
+    filter.syllabuses = {
+      $elemMatch: {
+        ...(course && { course }),
+        ...(subject && { subject }),
+        ...(code && { code }),
+      },
+    };
+  }
 
-    if (verifiedQuery.subject) {
-      courseOnly = false;
-      filter[`syllabus.${course}.subject`] = verifiedQuery.subject;
-    }
-    if (verifiedQuery.topic) {
-      courseOnly = false;
-      filter[`syllabus.${course}.topic`] = verifiedQuery.topic;
-    }
-    if (verifiedQuery.code) {
-      courseOnly = false;
-      filter[`syllabus.${course}.code`] = verifiedQuery.code;
-    }
-    if (courseOnly) {
-      filter[`syllabus.${course}`] = { $exists: true };
-    }
+  if (topic) {
+    filter.topic = topic;
   }
-  if (verifiedQuery.searchText) {
-    filter.$text = { $search: verifiedQuery.searchText };
+
+  if (text) {
+    filter.$text = { $search: text };
   }
-  try {
-    const skills = await skillsCollection.find(filter).toArray();
-    return skills;
-  } catch (error) {
-    console.error('Error fetching skills:', error);
-    throw error;
-  }
+
+  const skills = await skillsCollection.find(filter).toArray();
+  return skills;
 };
 export default searchSkills;
