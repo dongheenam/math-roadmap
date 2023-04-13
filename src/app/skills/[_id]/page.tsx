@@ -14,7 +14,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <main>
-      <h2>{skill.description}</h2>
+      <h2>Skill: {skill.description}</h2>
       <ul>
         {skill.syllabuses.map(({ course, subject, code }) => (
           <li key={course}>
