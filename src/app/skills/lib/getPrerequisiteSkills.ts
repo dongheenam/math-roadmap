@@ -6,15 +6,17 @@ import { Skill } from '@/app/types/skills';
 type SkillWithDepth = Skill & { depth: number };
 
 const getPrerequisiteSkills = async (
-  skillId: string | ObjectId
+  skillIds: (string | ObjectId)[]
 ): Promise<SkillWithDepth[]> => {
   const skillsCollection = getSkillsCollection(client);
+
+  const _ids = skillIds.map((id) => new ObjectId(id));
 
   try {
     const results = await skillsCollection
       .aggregate([
         {
-          $match: { _id: new ObjectId(skillId) },
+          $match: { _id: { $in: _ids } },
         },
         {
           $graphLookup: {
@@ -32,10 +34,10 @@ const getPrerequisiteSkills = async (
       ])
       .toArray();
 
-    if (results.length === 0) {
-      return [];
-    }
-    return results[0].prerequisites;
+    const prerequisites = results.flatMap(
+      (skill) => skill.prerequisites as SkillWithDepth[]
+    );
+    return prerequisites;
   } catch (error) {
     console.error('Error fetching prerequisite skills:', error);
     throw error;

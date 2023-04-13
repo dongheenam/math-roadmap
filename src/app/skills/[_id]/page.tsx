@@ -1,5 +1,8 @@
+import { Suspense } from 'react';
+
 import getSkillById from '@/app/skills/lib/getSkillById';
-import Prerequisites from './Prerequisites';
+import getPrerequisiteSkills from '../lib/getPrerequisiteSkills';
+import PrerequisitesList from './PrerequisitesList';
 
 type Props = {
   params: { _id: string };
@@ -11,6 +14,10 @@ export default async function Page({ params }: Props) {
   if (!skill) {
     throw new Error('Skill not found!');
   }
+  // Easier skills have a higher depth
+  const prerequisites = (await getPrerequisiteSkills([_id])).sort(
+    (a, b) => b.depth - a.depth
+  );
 
   return (
     <main>
@@ -31,7 +38,9 @@ export default async function Page({ params }: Props) {
           <span>{item.answer}</span>
         </details>
       ))}
-      <Prerequisites _id={_id} />
+      <Suspense>
+        <PrerequisitesList prerequisites={prerequisites} />
+      </Suspense>
     </main>
   );
 }

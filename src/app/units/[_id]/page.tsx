@@ -17,13 +17,14 @@ export default async function Page({ params }: Props) {
       <p>
         For {unit.course} {unit.subject} ({unit.topic})
       </p>
-      <p>Syllabus points:</p>
+      <h3>Syllabus points</h3>
       <ul>
         {unit.codes.map((code) => (
           <li key={code}>{code}</li>
         ))}
       </ul>
-      <p>Skill list in order:</p>
+      <h3>Skills</h3>
+      {/* <SkillsList _ids={unit.skills} /> */}
     </main>
   );
 }

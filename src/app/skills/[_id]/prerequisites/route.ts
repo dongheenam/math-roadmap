@@ -8,7 +8,7 @@ type Context = {
 export async function GET(request: Request, { params }: Context) {
   const { _id } = params;
 
-  const prerequisites = await getPrerequisiteSkills(_id);
+  const prerequisites = await getPrerequisiteSkills([_id]);
 
   return NextResponse.json(prerequisites);
 }
