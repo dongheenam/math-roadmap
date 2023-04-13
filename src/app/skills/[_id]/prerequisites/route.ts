@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import getPrerequisiteSkills from '@/app/api/lib/getPrerequisiteSkills';
+import getPrerequisiteSkills from '@/app/skills/lib/getPrerequisiteSkills';
 
 type Context = {
   params: { _id: string };

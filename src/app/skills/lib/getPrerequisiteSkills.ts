@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 
-import client, { getSkillsCollection } from './mongoClient';
+import client, { getSkillsCollection } from '@/common/mongoClient';
 import { Skill } from '@/app/types/skills';
 
 type SkillWithDepth = Skill & { depth: number };

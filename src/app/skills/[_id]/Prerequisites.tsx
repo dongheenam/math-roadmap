@@ -9,7 +9,7 @@ type Props = { _id: string };
 type SkillWithDepth = PlainSkill & { depth: number };
 
 const load = async (_id: string) => {
-  const res = await fetch(`/api/skills/${_id}/prerequisites`);
+  const res = await fetch(`/skills/${_id}/prerequisites`);
 
   if (!res.ok) {
     throw new Error('Failed to load prerequisites');

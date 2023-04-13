@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
-import searchSkills, { Query } from '../api/lib/searchSkills';
+import searchSkills, { Query } from './lib/searchSkills';
 import Skill from './SkillSummary';
-import { toPlainSkill } from './utils';
+import { toPlainSkill } from './lib/utils';
 import SearchForm from './SearchForm';
 
 type Props = {

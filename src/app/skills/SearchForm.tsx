@@ -4,7 +4,7 @@ import { useReducer } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { COURSES, SUBJECTS, TOPICS } from '../types/skills';
-import type { Query } from '../api/lib/searchSkills';
+import type { Query } from './lib/searchSkills';
 
 type Props = {
   parsedParams: Partial<Query>;

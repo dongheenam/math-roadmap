@@ -1,4 +1,4 @@
-import getSkillById from '@/app/api/lib/getSkillById';
+import getSkillById from '@/app/skills/lib/getSkillById';
 import Prerequisites from './Prerequisites';
 
 type Props = {

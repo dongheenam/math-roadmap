@@ -1,7 +1,7 @@
 import { COURSES, SUBJECTS, Skill } from '@/app/types/skills';
 import { MongoClient, Db, ObjectId } from 'mongodb';
 import createSkill from './createSkill';
-import client from './mongoClient';
+import client from '../../../common/mongoClient';
 import getSkillById from './getSkillById';
 import editSkill from './editSkill';
 import deleteSkillById from './deleteSkillById';
@@ -24,7 +24,8 @@ beforeAll(async () => {
     {
       _id: new ObjectId(),
       description: 'Solving simple linear equations',
-      syllabus: { AC: { subject: '7', topic: 'Algebra' } },
+      topic: 'Algebra',
+      syllabuses: [{ course: 'AC', subject: '7' }],
       exampleQuestions: [
         {
           question: 'Solve for $x$: $2x + 4 = 10$',
@@ -36,7 +37,8 @@ beforeAll(async () => {
     {
       _id: new ObjectId(),
       description: 'Calculating the area of a triangle',
-      syllabus: { AC: { subject: '7', topic: 'Space' } },
+      topic: 'Geometry',
+      syllabuses: [{ course: 'AC', subject: '7' }],
       exampleQuestions: [
         {
           question:
@@ -49,7 +51,8 @@ beforeAll(async () => {
     {
       _id: new ObjectId(),
       description: 'Solving quadratic equations',
-      syllabus: { AC: { subject: '10', topic: 'Algebra' } },
+      topic: 'Algebra',
+      syllabuses: [{ course: 'AC', subject: '10' }],
       exampleQuestions: [
         {
           question: 'Solve for $x$: $x^2 - 4x + 4 = 0$',
@@ -61,7 +64,8 @@ beforeAll(async () => {
     {
       _id: new ObjectId(),
       description: 'Calculating the sine of an angle',
-      syllabus: { AC: { subject: '9', topic: 'Space' } },
+      topic: 'Geometry',
+      syllabuses: [{ course: 'AC', subject: '9' }],
       exampleQuestions: [
         {
           question: 'Calculate the sine of a $30^\\circ$ angle.',
@@ -73,7 +77,8 @@ beforeAll(async () => {
     {
       _id: new ObjectId(),
       description: 'Solving right triangles',
-      syllabus: { AC: { subject: '9', topic: 'Space' } },
+      topic: 'Geometry',
+      syllabuses: [{ course: 'AC', subject: '9' }],
       exampleQuestions: [
         {
           question:
@@ -86,7 +91,8 @@ beforeAll(async () => {
     {
       _id: new ObjectId(),
       description: 'Differentiation of polynomial functions',
-      syllabus: { IB: { subject: 'AI HL', topic: 'Calculus' } },
+      topic: 'Calculus',
+      syllabuses: [{ course: 'IB', subject: 'AI HL' }],
       exampleQuestions: [
         {
           question: 'Find the derivative of $f(x) = 2x^3 - 4x^2 + 6x - 2$.',
@@ -99,7 +105,8 @@ beforeAll(async () => {
     {
       _id: new ObjectId(),
       description: 'Integration of polynomial functions',
-      syllabus: { IB: { subject: 'AI HL', topic: 'Calculus' } },
+      topic: 'Calculus',
+      syllabuses: [{ course: 'IB', subject: 'AI HL' }],
       exampleQuestions: [
         {
           question: 'Find the integral of $f(x) = 3x^2 - 2x + 4$.',
@@ -111,7 +118,8 @@ beforeAll(async () => {
     {
       _id: new ObjectId(),
       description: 'Calculating the volume of a cylinder',
-      syllabus: { AC: { subject: '10', topic: 'Space' } },
+      topic: 'Measurement',
+      syllabuses: [{ course: 'AC', subject: '10' }],
       exampleQuestions: [
         {
           question:
@@ -124,7 +132,8 @@ beforeAll(async () => {
     {
       _id: new ObjectId(),
       description: 'Solving systems of linear equations',
-      syllabus: { AC: { subject: '10', topic: 'Algebra' } },
+      topic: 'Algebra',
+      syllabuses: [{ course: 'AC', subject: '10' }],
       exampleQuestions: [
         {
           question:
@@ -137,7 +146,8 @@ beforeAll(async () => {
     {
       _id: new ObjectId(),
       description: 'Calculating the cosine of an angle',
-      syllabus: { AC: { subject: '9', topic: 'Space' } },
+      topic: 'Geometry',
+      syllabuses: [{ course: 'AC', subject: '9' }],
       exampleQuestions: [
         {
           question: 'Calculate the cosine of a $60^\\circ$ angle.',
@@ -203,17 +213,19 @@ describe('searchSkills', () => {
         course: randomCourse,
         subject: randomSubject,
       });
-      const expectedSkills = skills.filter(
-        (skill) =>
-          randomCourse in skill.syllabus &&
-          skill.syllabus[randomCourse]!.subject === randomSubject
+      const expectedSkills = skills.filter((skill) =>
+        skill.syllabuses.some(
+          (syllabus) =>
+            syllabus.course === randomCourse &&
+            syllabus.subject === randomSubject
+        )
       );
       expect(fetchedSkills.length).toEqual(expectedSkills.length);
     }
   });
 
   it('should search texts correctly', async () => {
-    const fetchedSkills = await searchSkills({ searchText: 'volume' });
+    const fetchedSkills = await searchSkills({ text: 'volume' });
     const expectedSkills = skills.filter((skill) =>
       skill.description.toLowerCase().includes('volume')
     );
@@ -221,7 +233,7 @@ describe('searchSkills', () => {
   });
 
   it("should return an empty array if the query doesn't match any skills", async () => {
-    const fetchedSkills = await searchSkills({ searchText: 'random text' });
+    const fetchedSkills = await searchSkills({ text: 'random text' });
     expect(fetchedSkills.length).toEqual(0);
   });
 });
@@ -232,7 +244,7 @@ describe('editSkill', () => {
     if (skill) {
       const updates: Partial<Skill> = {
         description: 'Basic addition and subtraction',
-        syllabus: { IB: { subject: 'AI SL', topic: 'Number and Algebra' } },
+        syllabuses: [{ course: 'IB', subject: 'AI SL' }],
       };
       await editSkill(skill._id, updates);
 

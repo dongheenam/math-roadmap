@@ -1,6 +1,6 @@
 import { Filter } from 'mongodb';
 
-import client, { getSkillsCollection } from './mongoClient';
+import client, { getSkillsCollection } from '@/common/mongoClient';
 import { Skill, COURSES, SUBJECTS, TOPICS } from '@/app/types/skills';
 
 export type Query = {

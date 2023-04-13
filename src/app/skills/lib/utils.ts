@@ -1,5 +1,17 @@
-import { Skill } from '@/app/types/skills';
+import { PlainSkill, Skill } from '@/app/types/skills';
 import { Collection, Document, ObjectId } from 'mongodb';
+
+// ObjectIds are not serializable, so we need to convert them to strings
+// before exchanging them between the server and client
+export const toPlainSkill = (skill: Skill): PlainSkill => {
+  return {
+    ...skill,
+    _id: skill._id.toHexString(),
+    prerequisiteIds: skill.prerequisiteIds.map((id: ObjectId) =>
+      id.toHexString()
+    ),
+  };
+};
 
 // check if all documents with specified IDs exist in the collection
 export const doDocumentsExist = async <D extends Document>(
